@@ -1,4 +1,4 @@
-name: Ion #662 current-main Linux desktop artifact
+name: Ion #664 fix-head Linux desktop artifact
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
       - name: Checkout exact source
         uses: actions/checkout@v4
         with:
-          ref: 4b356bfb29a801a6ad310e16942e3f1dc72a66fd
+          ref: 8c535448a059bad93ae0ff38a3c469f88df39104
           submodules: recursive
       - name: Cache GGUF model
         uses: actions/cache@v4
@@ -56,20 +56,20 @@ jobs:
       - name: Set temporary version
         run: node scripts/set-desktop-version.mjs
         env:
-          VITE_VERSION: '0.0.662'
+          VITE_VERSION: '0.0.664'
       - name: Package Linux desktop without publishing
         run: pnpm desktop:make --arch=x64
         env:
           NODE_ENV: test
           NODE_OPTIONS: --max_old_space_size=8192
           DAEMON_NAME: x86_64-unknown-linux-gnu
-          VITE_VERSION: '0.0.662'
-          VITE_COMMIT_HASH: '4b356bfb29a801a6ad310e16942e3f1dc72a66fd'
+          VITE_VERSION: '0.0.664'
+          VITE_COMMIT_HASH: '8c535448a059bad93ae0ff38a3c469f88df39104'
           VITE_DESKTOP_P2P_PORT: '57000'
           VITE_DESKTOP_HTTP_PORT: '57001'
           VITE_DESKTOP_GRPC_PORT: '57002'
           VITE_METRIC_SERVER_HTTP_PORT: '57003'
-          VITE_DESKTOP_APPDATA: 'Seed-ion-662'
+          VITE_DESKTOP_APPDATA: 'Seed-ion-664-fix'
           VITE_DESKTOP_HOSTNAME: 'http://localhost'
           VITE_LIGHTNING_API_URL: 'https://ln.testnet.seed.hyper.media'
           VITE_SEED_HOST_URL: 'https://host-dev.seed.hyper.media'
@@ -79,11 +79,11 @@ jobs:
       - name: Record exact source
         run: |
           mkdir -p frontend/apps/desktop/out/make
-          printf '%s\n' '4b356bfb29a801a6ad310e16942e3f1dc72a66fd' > frontend/apps/desktop/out/make/ION-SOURCE-SHA.txt
+          printf '%s\n' '8c535448a059bad93ae0ff38a3c469f88df39104' > frontend/apps/desktop/out/make/ION-SOURCE-SHA.txt
       - name: Upload exact-source package
         uses: actions/upload-artifact@v4
         with:
-          name: issue-662-current-main-4b356bfb29a801a6ad310e16942e3f1dc72a66fd
+          name: issue-664-fix-8c535448a059bad93ae0ff38a3c469f88df39104
           path: frontend/apps/desktop/out/make/**/*
           if-no-files-found: error
           retention-days: 14
