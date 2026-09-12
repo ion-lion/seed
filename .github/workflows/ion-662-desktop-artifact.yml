@@ -79,8 +79,7 @@ jobs:
       - name: Record exact source
         run: |
           mkdir -p frontend/apps/desktop/out/make
-          printf '%s
-' '998023458d45c6bbc24b823a952d4c21a43e82e9' > frontend/apps/desktop/out/make/ION-SOURCE-SHA.txt
+          printf '%s\n' '998023458d45c6bbc24b823a952d4c21a43e82e9' > frontend/apps/desktop/out/make/ION-SOURCE-SHA.txt
       - name: Upload exact-source package
         uses: actions/upload-artifact@v4
         with:
