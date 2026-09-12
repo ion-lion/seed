@@ -1,0 +1,75 @@
+name: Ion issue 972 web acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact Seed source SHA to validate
+        required: true
+        default: 4b356bfb29a801a6ad310e16942e3f1dc72a66fd
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  web-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact Seed source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_sha }}
+      - name: Checkout Ion harness
+        uses: actions/checkout@v4
+        with:
+          ref: ion/issue-972-acceptance-artifacts
+          path: ion-harness
+          sparse-checkout: .github/ion
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install frontend and browser dependencies
+        run: |
+          pnpm install --frozen-lockfile --prefer-offline
+          pnpm exec playwright install --with-deps chromium
+      - name: Download exact-source desktop artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: issue-972-baseline-4b356bfb29a801a6ad310e16942e3f1dc72a66fd
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ion-lion/seed
+          run-id: 34676568336
+          path: exact-package
+      - name: Run deterministic web acceptance
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p exact-root fixture out
+          dpkg-deb -x exact-package/deb/x64/seed_0.0.972_amd64.deb exact-root
+          curl -fL --retry 3 https://github.com/ion-lion/seed/releases/download/ion-ui-fixtures-v1/issue-972-web-fixture.tar.gz -o fixture.tar.gz
+          test "$(sha256sum fixture.tar.gz | cut -d' ' -f1)" = dcdd3ab5df52483104bdeb9ddc979fdc76bccb18c65b7a64744e00458c7e2688
+          tar -C fixture -xzf fixture.tar.gz
+          mkdir -p fixture/keys
+          DAEMON=exact-root/usr/lib/seed/resources/seed-daemon-x86_64-unknown-linux-gnu
+          "$DAEMON" -data-dir="$PWD/fixture" -keystore-dir="$PWD/fixture/keys" -http.port=58001 -grpc.port=58002 -p2p.port=58000 -lndhub.mainnet=false -p2p.testnet-name=dev >out/daemon.log 2>&1 & DP=$!
+          trap 'kill ${WP:-} ${DP:-} 2>/dev/null || true' EXIT
+          for i in $(seq 1 180); do curl -fsS http://127.0.0.1:58001/debug/version >out/daemon-version.json 2>/dev/null && break; sleep .5; done
+          test -s out/daemon-version.json
+          DATA_DIR="$PWD/fixture" DAEMON_HTTP_URL=http://127.0.0.1:58001 SEED_BASE_URL=http://localhost:3000 SEED_SIGNING_ENABLED=true SEED_IDENTITY_ENABLED=false pnpm web >out/web.log 2>&1 & WP=$!
+          for i in $(seq 1 240); do curl -fsS http://localhost:3000/ >out/index.html 2>/dev/null && break; sleep .5; done
+          test -s out/index.html
+          node ion-harness/.github/ion/accept-web.cjs http://localhost:3000 current-main out | tee out/run.log
+          sha256sum out/summary.json out/trace.zip out/file-browser.png | tee out/SHA256SUMS
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+      - name: Upload acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue-972-web-${{ inputs.source_sha }}
+          path: out
+          if-no-files-found: warn
