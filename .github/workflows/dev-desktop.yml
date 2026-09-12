@@ -236,7 +236,7 @@ jobs:
       - name: Build, package & make (Unix)
         if: ${{ !startsWith(matrix.config.os, 'windows') }}
         run: |
-          pnpm desktop:publish --arch=${{ matrix.config.arch }}
+          pnpm desktop:make --arch=${{ matrix.config.arch }}
         env:
           timeout-minutes: 10
           DEBUG: electron-*,electron-installer-flatpak*,@malept/flatpak-bundler
@@ -245,7 +245,7 @@ jobs:
           FLATPAK_BUILDER_VERBOSE: '1'
           DAEMON_NAME: ${{ matrix.config.daemon_name }}
           VITE_VERSION: '${{ needs.build-info.outputs.version }}'
-          VITE_COMMIT_HASH: '${{ github.sha }}'
+          VITE_COMMIT_HASH: '43d0646cc9438b17b6f069ac45fe33680b125960'
           VITE_DESKTOP_P2P_PORT: '57000'
           VITE_DESKTOP_HTTP_PORT: '57001'
           VITE_DESKTOP_GRPC_PORT: '57002'
@@ -300,7 +300,7 @@ jobs:
         run: |
           # Clear any existing out directory to force a clean build
           if (Test-Path "frontend/apps/desktop/out") { Remove-Item -Recurse -Force "frontend/apps/desktop/out" }
-          pnpm desktop:publish --arch=${{ matrix.config.arch }}
+          pnpm desktop:make --arch=${{ matrix.config.arch }}
         env:
           timeout-minutes: 10
           DEBUG: electron-*
@@ -308,7 +308,7 @@ jobs:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
           DAEMON_NAME: '${{ matrix.config.daemon_name }}.exe'
           VITE_VERSION: '${{ needs.build-info.outputs.version }}'
-          VITE_COMMIT_HASH: '${{ github.sha }}'
+          VITE_COMMIT_HASH: '43d0646cc9438b17b6f069ac45fe33680b125960'
           VITE_DESKTOP_P2P_PORT: '57000'
           VITE_DESKTOP_HTTP_PORT: '57001'
           VITE_DESKTOP_GRPC_PORT: '57002'
