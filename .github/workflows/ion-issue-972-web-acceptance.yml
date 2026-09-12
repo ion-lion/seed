@@ -63,7 +63,7 @@ jobs:
           DATA_DIR="$PWD/fixture" DAEMON_HTTP_URL=http://127.0.0.1:58001 DAEMON_HTTP_PORT=58001 DAEMON_FILE_URL=http://localhost:58001/ipfs SEED_BASE_URL=http://localhost:3000 SEED_SIGNING_ENABLED=true SEED_IDENTITY_ENABLED=false PORT=3000 pnpm web:start >out/web.log 2>&1 & WP=$!
           for i in $(seq 1 240); do curl -fsS http://localhost:3000/ >out/index.html 2>/dev/null && break; sleep .5; done
           test -s out/index.html
-          node ion-harness/.github/ion/accept-web.cjs http://localhost:3000 current-main out | tee out/run.log
+          node ion-harness/.github/ion/accept-web.cjs http://localhost:3000 "$SOURCE_SHA" out | tee out/run.log
           sha256sum out/summary.json out/trace.zip out/file-browser.png | tee out/SHA256SUMS
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
       - name: Upload acceptance evidence
