@@ -16,7 +16,7 @@ jobs:
       - name: Checkout exact source
         uses: actions/checkout@v4
         with:
-          ref: 4b356bfb29a801a6ad310e16942e3f1dc72a66fd
+          ref: e93b9a5633e2860e6907959d27e3aa4e6a64d3d4
           submodules: recursive
           persist-credentials: false
       - name: Cache GGUF model
@@ -63,7 +63,7 @@ jobs:
           NODE_OPTIONS: --max_old_space_size=8192
           DAEMON_NAME: x86_64-unknown-linux-gnu
           VITE_VERSION: '0.0.598'
-          VITE_COMMIT_HASH: '4b356bfb29a801a6ad310e16942e3f1dc72a66fd'
+          VITE_COMMIT_HASH: 'e93b9a5633e2860e6907959d27e3aa4e6a64d3d4'
           VITE_DESKTOP_P2P_PORT: '57000'
           VITE_DESKTOP_HTTP_PORT: '57001'
           VITE_DESKTOP_GRPC_PORT: '57002'
@@ -79,10 +79,10 @@ jobs:
         run: |
           find frontend/apps/desktop/out/make -type f \( -name '*.deb' -o -name '*.rpm' -o -name '*.AppImage' \) -size +0c | grep -q .
           mkdir -p frontend/apps/desktop/out/make
-          printf '%s\n' '4b356bfb29a801a6ad310e16942e3f1dc72a66fd' > frontend/apps/desktop/out/make/ION-SOURCE-SHA.txt
+          printf '%s\n' 'e93b9a5633e2860e6907959d27e3aa4e6a64d3d4' > frontend/apps/desktop/out/make/ION-SOURCE-SHA.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: issue-598-exact-4b356bfb29a801a6ad310e16942e3f1dc72a66fd
+          name: issue-598-exact-e93b9a5633e2860e6907959d27e3aa4e6a64d3d4
           path: frontend/apps/desktop/out/make/**/*
           if-no-files-found: error
           retention-days: 14
