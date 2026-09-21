@@ -16,7 +16,7 @@ jobs:
       - name: Checkout exact source
         uses: actions/checkout@v4
         with:
-          ref: e93b9a5633e2860e6907959d27e3aa4e6a64d3d4
+          ref: b45c6556782bfc836f4201cf5a13204c08bc94a2
           submodules: recursive
           persist-credentials: false
       - name: Cache GGUF model
@@ -55,20 +55,20 @@ jobs:
       - name: Set temporary version
         run: node scripts/set-desktop-version.mjs
         env:
-          VITE_VERSION: '0.0.598'
+          VITE_VERSION: '0.0.1140'
       - name: Package Linux desktop without publishing
         run: pnpm desktop:make --arch=x64
         env:
           NODE_ENV: test
           NODE_OPTIONS: --max_old_space_size=8192
           DAEMON_NAME: x86_64-unknown-linux-gnu
-          VITE_VERSION: '0.0.598'
-          VITE_COMMIT_HASH: 'e93b9a5633e2860e6907959d27e3aa4e6a64d3d4'
+          VITE_VERSION: '0.0.1140'
+          VITE_COMMIT_HASH: 'b45c6556782bfc836f4201cf5a13204c08bc94a2'
           VITE_DESKTOP_P2P_PORT: '57000'
           VITE_DESKTOP_HTTP_PORT: '57001'
           VITE_DESKTOP_GRPC_PORT: '57002'
           VITE_METRIC_SERVER_HTTP_PORT: '57003'
-          VITE_DESKTOP_APPDATA: 'Seed-ion-598-exact'
+          VITE_DESKTOP_APPDATA: 'Seed-ion-1140-exact'
           VITE_DESKTOP_HOSTNAME: 'http://localhost'
           VITE_LIGHTNING_API_URL: 'https://ln.testnet.seed.hyper.media'
           VITE_SEED_HOST_URL: 'https://host-dev.seed.hyper.media'
@@ -79,10 +79,10 @@ jobs:
         run: |
           find frontend/apps/desktop/out/make -type f \( -name '*.deb' -o -name '*.rpm' -o -name '*.AppImage' \) -size +0c | grep -q .
           mkdir -p frontend/apps/desktop/out/make
-          printf '%s\n' 'e93b9a5633e2860e6907959d27e3aa4e6a64d3d4' > frontend/apps/desktop/out/make/ION-SOURCE-SHA.txt
+          printf '%s\n' 'b45c6556782bfc836f4201cf5a13204c08bc94a2' > frontend/apps/desktop/out/make/ION-SOURCE-SHA.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: issue-598-exact-e93b9a5633e2860e6907959d27e3aa4e6a64d3d4
+          name: issue-1140-exact-b45c6556782bfc836f4201cf5a13204c08bc94a2
           path: frontend/apps/desktop/out/make/**/*
           if-no-files-found: error
           retention-days: 14
