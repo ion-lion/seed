@@ -1,6 +1,7 @@
 name: Ion exact-source Linux desktop artifact
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - ion/exact-desktop-artifact
